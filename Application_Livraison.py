@@ -3,7 +3,6 @@ from tkinter import messagebox, ttk
 from abc import ABC, abstractmethod
 import sys
 
-# Classe abstraite Vehicule
 class Vehicule(ABC):
     def __init__(self, marque, modele, immatriculation):
         self._marque = marque
@@ -17,7 +16,6 @@ class Vehicule(ABC):
     def __str__(self):
         return f"{self._marque} {self._modele} ({self._immatriculation})"
 
-# Classes dérivées
 class Camion(Vehicule):
     def __init__(self, marque, modele, immatriculation, capacite):
         super().__init__(marque, modele, immatriculation)
@@ -38,7 +36,6 @@ class Moto(Vehicule):
         commande.marquer_livree()
         return f"Moto livre {commande.id} à {self.vitesse_max}km/h"
 
-# Classe Commande
 class Commande:
     def __init__(self, id, destination, poids):
         self.id = id
@@ -53,7 +50,6 @@ class Commande:
     def valider_poids(poids):
         return 0 < poids <= 100
 
-# Classe Livreur
 class Livreur:
     def __init__(self, nom, vehicule=None):
         self.nom = nom
@@ -88,7 +84,6 @@ class Livreur:
         commandes_info = f" ({len(self.commandes_en_cours)} commandes)" if self.commandes_en_cours else ""
         return f"{self.nom} - {vehicule_info}{commandes_info}"
 
-# Classe Depot
 class Depot:
     def __init__(self):
         self.vehicules_disponibles = []
@@ -117,7 +112,6 @@ class Depot:
         etat += "\n".join(f"{c.id} - {c.destination} ({c.poids}kg)" for c in self.commandes if c.statut == "en attente")
         return etat
 
-# Interface graphique
 class Application(tk.Tk):
     def __init__(self, depot):
         super().__init__()
@@ -134,15 +128,12 @@ class Application(tk.Tk):
         sys.exit()
     
     def create_widgets(self):
-        # Frame principale
         main_frame = ttk.Frame(self)
         main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
-        # Listboxes avec scrollbars
         list_frame = ttk.Frame(main_frame)
         list_frame.pack(fill=tk.BOTH, expand=True)
         
-        # Véhicules
         ttk.Label(list_frame, text="Véhicules").grid(row=0, column=0, sticky="w")
         vehicule_frame = ttk.Frame(list_frame)
         vehicule_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
@@ -152,7 +143,6 @@ class Application(tk.Tk):
         scrollbar_v.pack(side=tk.RIGHT, fill=tk.Y)
         self.vehicules_listbox.config(yscrollcommand=scrollbar_v.set)
         
-        # Livreurs
         ttk.Label(list_frame, text="Livreurs").grid(row=0, column=1, sticky="w")
         livreur_frame = ttk.Frame(list_frame)
         livreur_frame.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
@@ -162,7 +152,6 @@ class Application(tk.Tk):
         scrollbar_l.pack(side=tk.RIGHT, fill=tk.Y)
         self.livreurs_listbox.config(yscrollcommand=scrollbar_l.set)
         
-        # Commandes
         ttk.Label(list_frame, text="Commandes").grid(row=0, column=2, sticky="w")
         commande_frame = ttk.Frame(list_frame)
         commande_frame.grid(row=1, column=2, padx=5, pady=5, sticky="nsew")
@@ -172,7 +161,6 @@ class Application(tk.Tk):
         scrollbar_c.pack(side=tk.RIGHT, fill=tk.Y)
         self.commandes_listbox.config(yscrollcommand=scrollbar_c.set)
         
-        # Boutons
         btn_frame = ttk.Frame(main_frame)
         btn_frame.pack(fill=tk.X, pady=10)
         
@@ -196,17 +184,14 @@ class Application(tk.Tk):
     
     def update_listboxes(self):
         """Mise à jour des listes de l'interface"""
-        # Mise à jour des véhicules
         self.vehicules_listbox.delete(0, tk.END)
         for v in self.depot.vehicules_disponibles:
             self.vehicules_listbox.insert(tk.END, str(v))
         
-        # Mise à jour des livreurs
         self.livreurs_listbox.delete(0, tk.END)
         for l in self.depot.livreurs_disponibles:
             self.livreurs_listbox.insert(tk.END, str(l))
         
-        # Mise à jour des commandes
         self.commandes_listbox.delete(0, tk.END)
         for c in self.depot.commandes:
             status = "🟢" if c.statut == "livrée" else "🟠"
@@ -263,7 +248,6 @@ class Application(tk.Tk):
     def afficher_etat(self):
         messagebox.showinfo("État du dépôt", self.depot.afficher_etat())
 
-# Dialogs pour l'ajout d'éléments
 class AjoutVehiculeDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -273,7 +257,6 @@ class AjoutVehiculeDialog(tk.Toplevel):
         self.transient(parent)
         self.grab_set()
         
-        # Configuration de la grille
         self.grid_columnconfigure(1, weight=1)
         
         ttk.Label(self, text="Type:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
@@ -334,7 +317,6 @@ class AjoutLivreurDialog(tk.Toplevel):
         self.transient(parent)
         self.grab_set()
         
-        # Configuration de la grille
         self.grid_columnconfigure(1, weight=1)
         
         ttk.Label(self, text="Nom:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
@@ -368,7 +350,6 @@ class AjoutCommandeDialog(tk.Toplevel):
         self.transient(parent)
         self.grab_set()
         
-        # Configuration de la grille
         self.grid_columnconfigure(1, weight=1)
         
         ttk.Label(self, text="ID:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
@@ -407,11 +388,9 @@ class AjoutCommandeDialog(tk.Toplevel):
         except ValueError:
             messagebox.showerror("Erreur", "Données invalides")
 
-# Point d'entrée de l'application
 if __name__ == "__main__":
     depot = Depot()
     
-    # Exemple de données initiales
     depot.ajouter_vehicule(Camion("Renault", "Truck", "AB-123-CD", 10))
     depot.ajouter_vehicule(Moto("Yamaha", "MT-07", "XYZ-987", 120))
     depot.ajouter_livreur(Livreur("Jean Dupont"))
